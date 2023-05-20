@@ -1,9 +1,5 @@
 # gpt-lisp
 
-> 这个项目是我首次尝试使用人工智能语言模型来进行交互对话,从而协助编写代码。我希望这种前沿的软件工程方法可以推动人工智能的发展更加人性化和符合社会实际,加速开发进程,扩大人工智能的影响力。通过直接与 AI 系统对话和合作,我们可以加深对人工智能的理解,并逐步培养直观地感受到人工智能已经成为普惠之物的认知。
->
-> ---
->
 > This project is my first attempt at using a GPT language model for conversational interactions to assist with writing code. I hope this new method of software engineering can advance AI technologies into more humanizing and socializing ways, thereby accelerating the development process and broadening the impact of AI. By conversing and collaborating directly with AI systems, we can learn to better understand artificial intelligence and cultivate an intuitive sense that AI is accessible to all.
 
 ## About
