@@ -13,7 +13,10 @@ Node *read_expr(char *input) {
     Node *tail = NULL;
     while (c != '\0' && c == '(') {
       Node *n = read_expr(input + i);
-      if (n == NULL) return NULL;
+      if (n == NULL) {
+        if (head != NULL) free_list(head);
+        return NULL;
+      }
       if (tail == NULL) {
         head = n;
         tail = n;
@@ -24,23 +27,46 @@ Node *read_expr(char *input) {
       c = input[i++];
       if (c == ')') break;
     }
-    free(head);
+    if (tail != NULL) tail->next = NULL;
     return head;
   } else {
     char *str_end = strchr(input + i, '(');
-    int str_len = str_end - input - i;
-    char *str = strndup(input + i, str_len);
+    if (str_end == NULL) {
+      str_end = input + strlen(input) - 1;
+    } else {
+      str_end--;
+    }
+    int str_len = str_end - (input + i) + 1;
+    char *str_start = input + i - 1;
+    char *str = malloc(str_len + 1);
     if (str == NULL) return NULL;
+    memcpy(str, str_start, str_len);
+    str[str_len] = '\0';
     Node *n = malloc(sizeof(Node));
     if (n == NULL) {
       free(str);
       return NULL;
     }
-    n->val = strdup(str);
+    n->val = malloc(str_len + 1);
+    if (n->val == NULL) {
+      free(str);
+      free(n);
+      return NULL;
+    }
+    memcpy(n->val, str, str_len + 1);
     free(str);
     n->next = NULL;
-    i += str_len;
+    i += str_len + 1;
     return n;
+  }
+}
+
+void free_list(Node *head) {
+  while (head != NULL) {
+    Node *next = head->next;
+    free(head->val);
+    free(head);
+    head = next;
   }
 }
 
@@ -50,11 +76,26 @@ void free_nodes(Node *n) {
   free(n);
 }
 
+void eval_atom(Node *n) {
+  if (n == NULL) return;
+  if (strcmp(n->val, "true") == 0 || strcmp(n->val, "false") == 0) {
+    printf("bool: %s ", n->val);
+  } else if (n->val[0] == '\"' && n->val[strlen(n->val) - 1] == '\"') {
+    printf("string: %s ", n->val);
+  } else if (n->val[0] == '\'') {
+    printf("char: %s ", n->val);
+  } else if (n->val[0] == '-' || (n->val[0] >= '0' && n->val[0] <= '9')) {
+    printf("number: %s ", n->val);
+  } else {
+    printf("symbol: %s ", n->val);
+  }
+}
+
 void eval_expr(Node *n) {
   if (n == NULL) return;
 
   if (n->next == NULL) {  // atom
-    printf("%s ", n->val);
+    eval_atom(n);
   } else {
     printf("(");
     Node *curr = n;
